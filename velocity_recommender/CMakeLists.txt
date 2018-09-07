@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(reactive_hokuyo)
+project(velocity_recommender)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED)
@@ -8,9 +8,6 @@ find_package(catkin REQUIRED)
 # ******************************************************************** 
 find_package(catkin REQUIRED COMPONENTS 
   iri_base_algorithm
-  pcl_ros
-  pcl_conversions
-  laser_geometry
   dynamic_reconfigure
 )
 
@@ -55,7 +52,7 @@ find_package(catkin REQUIRED COMPONENTS
 # ******************************************************************** 
 #                 Add the dynamic reconfigure file 
 # ******************************************************************** 
-generate_dynamic_reconfigure_options(cfg/ReactiveHokuyo.cfg)
+generate_dynamic_reconfigure_options(cfg/VelocityRecommender.cfg)
 
 # ******************************************************************** 
 #                 Add run time dependencies here
@@ -68,9 +65,6 @@ catkin_package(
 # ******************************************************************** 
  CATKIN_DEPENDS 
    iri_base_algorithm
-   pcl_ros
-   pcl_conversions
-   laser_geometry
    dynamic_reconfigure
 # ******************************************************************** 
 #      Add system and labrobotica run time dependencies here
@@ -87,16 +81,14 @@ catkin_package(
 # ******************************************************************** 
 include_directories(include)
 include_directories(${catkin_INCLUDE_DIRS})
-include_directories(${PCL_INCLUDE_DIRS})
-include_directories(src/reactive_hokuyo/include)
-
+include_directories(src/velocity_recommender/include)
 # include_directories(${<dependency>_INCLUDE_DIR})
 
 ## Declare a cpp library
 # add_library(${PROJECT_NAME} <list of source files>)
 
 ## Declare a cpp executable
-add_executable(${PROJECT_NAME} src/reactive_hokuyo_alg.cpp src/reactive_hokuyo_alg_node.cpp)
+add_executable(${PROJECT_NAME} src/velocity_recommender_alg.cpp src/velocity_recommender_alg_node.cpp)
 
 # ******************************************************************** 
 #                   Add the libraries

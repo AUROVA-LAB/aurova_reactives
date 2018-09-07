@@ -22,15 +22,12 @@
 // refer to the IRI wiki page for more information:
 // http://wikiri.upc.es/index.php/Robotics_Lab
 
-#ifndef _reactive_hokuyo_alg_node_h_
-#define _reactive_hokuyo_alg_node_h_
+#ifndef _velocity_recommender_alg_node_h_
+#define _velocity_recommender_alg_node_h_
 
 #include <iri_base_algorithm/iri_base_algorithm.h>
-#include "reactive_hokuyo_alg.h"
-#include <sensor_msgs/LaserScan.h>
-#include <pcl_conversions/pcl_conversions.h>
+#include "velocity_recommender_alg.h"
 #include "std_msgs/Float32.h"
-#include "ackermann_msgs/AckermannDriveStamped.h"
 
 // [publisher subscriber headers]
 
@@ -42,62 +39,52 @@
  * \brief IRI ROS Specific Algorithm Class
  *
  */
-class ReactiveHokuyoAlgNode : public algorithm_base::IriBaseAlgorithm<ReactiveHokuyoAlgorithm>
+class VelocityRecommenderAlgNode : public algorithm_base::IriBaseAlgorithm<VelocityRecommenderAlgorithm>
 {
 private:
-  // Constants
-  const float OUT_OF_RANGE_ = 100.0;
-  const float STOP_VEHICLE_ = 0.0;
+  const float OUT_OF_RANGE = 100.0;
+  const float MAX_VELOCITY = 2.0;
 
-  // Constant robot hardware constraints
-  const float DISTANCE_FROM_SENSOR_TO_FRONT_ = 0.150;
-  const float SENSOR_PITCH_DEG_ANGLE_ = 15.000;
-  const float SENSOR_HEIGHT_ = 0.650;
+  float time_to_reach_min_allowed_distance_;
+  float safety_distance_to_stop_vehicle_;
 
-  const float VEHICLE_WIDTH_ = 0.800;
-  const float ABS_MAX_STEERING_DEG_ANGLE = 30.000;
-  const float MIN_OBSTACLE_HEIGHT_ = 0.300;
+  bool flag_new_data_;
 
-  // Input
-  bool flag_new_hokuyo_data_;
-  sensor_msgs::LaserScan input_scan_;
-  sensor_msgs::LaserScan local_copy_of_input_scan_;
+  float hokuyo_front_obstacle_distance;
+  float velodyne_front_obstacle_distance_;
+  float local_map_front_obstacle_distance_;
 
-  // Point cloud to convert to 3D using the sensor pose
-  sensor_msgs::PointCloud2 real_3D_cloud_;
-  sensor_msgs::PointCloud2 obstacle_points_;
-  sensor_msgs::PointCloud2 final_obstacles_;
+  float min_front_obstacle_distance_;
+  float forward_velocity_recommendation_;
 
-  // Configurable safety parameters
-  float abs_lateral_safety_margin_;
+  float velodyne_back_obstacle_distance_;
+  float local_map_back_obstacle_distance_;
 
-  float z_threshold_;
-  float safety_width_;
-
-  float euclidean_association_threshold_;
-  float min_obstacle_radius_;
-
-  // Values to compute output
-  float closest_obstacle_point_;
-  float steering_angle_;
+  float min_back_obstacle_distance_;
+  float backward_velocity_recommendation_;
 
   // [publisher attributes]
-  ros::Publisher front_obstacle_distance_publisher_;
-  std_msgs::Float32 front_obstacle_distance_msg_;
+  ros::Publisher forward_recommended_velocity_publisher_;
+  std_msgs::Float32 forward_recommended_velocity_msg_;
 
-  ros::Publisher pointcloud_publisher_;
-  sensor_msgs::PointCloud2 pointcloud_msg_;
+  ros::Publisher backward_recommended_velocity_publisher_;
+  std_msgs::Float32 backward_recommended_velocity_msg_;
 
   // [subscriber attributes]
-  ros::Subscriber hokuyo_subscriber_;
-  void hokuyo_callback(const sensor_msgs::LaserScan::ConstPtr& msg);
+  ros::Subscriber reactive_hokuyo_subscriber_;
+  void reactive_hokuyo_callback(const std_msgs::Float32::ConstPtr& msg);
 
-  ros::Subscriber ackermann_subscriber_;
-  void estimatedAckermannStateCB(const ackermann_msgs::AckermannDriveStamped& estimated_ackermann_state_msg);
+  // [service attributes]
 
-  pthread_mutex_t hokuyo_mutex_;
-  void hokuyo_mutex_enter(void);
-  void hokuyo_mutex_exit(void);
+  // [client attributes]
+
+  // [action server attributes]
+
+  // [action client attributes]
+
+  pthread_mutex_t velocity_recommender_mutex_;
+  void velocity_recommender_mutex_enter(void);
+  void velocity_recommender_mutex_exit(void);
 
   /**
    * \brief config variable
@@ -113,7 +100,7 @@ public:
    * This constructor initializes specific class attributes and all ROS
    * communications variables to enable message exchange.
    */
-  ReactiveHokuyoAlgNode(void);
+  VelocityRecommenderAlgNode(void);
 
   /**
    * \brief Destructor
@@ -121,7 +108,7 @@ public:
    * This destructor frees all necessary dynamic memory allocated within this
    * this class.
    */
-  ~ReactiveHokuyoAlgNode(void);
+  ~VelocityRecommenderAlgNode(void);
 
 protected:
   /**
