@@ -45,7 +45,6 @@ void ReactiveHokuyoAlgorithm::incorporateSensorPoseInformation(sensor_msgs::Lase
                                                                float steering_deg_angle,
                                                                sensor_msgs::PointCloud2& output_3D_pointcloud2)
 {
-  //std::cout << "incorporateSensorPoseInformation" << std::endl;
 
   // We convert the laser scan to 3D pointcloud
   projector_.projectLaser(input_laser_scan, output_3D_pointcloud2);

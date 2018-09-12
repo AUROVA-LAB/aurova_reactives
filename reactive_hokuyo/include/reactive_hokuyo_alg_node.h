@@ -21,6 +21,12 @@
 // of the scripts. ROS topics can be easly add by using those scripts. Please
 // refer to the IRI wiki page for more information:
 // http://wikiri.upc.es/index.php/Robotics_Lab
+/**
+ * \file reactive_hokuyo_alg_node.h
+ *
+ *  Created on: 04 Sep 2018
+ *      Author: i.delpino
+ */
 
 #ifndef _reactive_hokuyo_alg_node_h_
 #define _reactive_hokuyo_alg_node_h_
@@ -90,10 +96,17 @@ private:
 
   // [subscriber attributes]
   ros::Subscriber hokuyo_subscriber_;
-  void hokuyo_callback(const sensor_msgs::LaserScan::ConstPtr& msg);
-
   ros::Subscriber ackermann_subscriber_;
-  void estimatedAckermannStateCB(const ackermann_msgs::AckermannDriveStamped& estimated_ackermann_state_msg);
+
+  /**
+   * \brief Callback for read hokuyo laser sensor.
+   */
+  void cb_hokuyoMsg(const sensor_msgs::LaserScan::ConstPtr& msg);
+
+  /**
+   * \brief Callback for read ackermann messages.
+   */
+  void cb_estimatedAckermannState(const ackermann_msgs::AckermannDriveStamped& estimated_ackermann_state_msg);
 
   pthread_mutex_t hokuyo_mutex_;
   void hokuyo_mutex_enter(void);

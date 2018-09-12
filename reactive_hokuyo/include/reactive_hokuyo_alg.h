@@ -21,6 +21,12 @@
 // of the scripts. ROS topics can be easly add by using those scripts. Please
 // refer to the IRI wiki page for more information:
 // http://wikiri.upc.es/index.php/Robotics_Lab
+/**
+ * \file reactive_hokuyo_alg.h
+ *
+ *  Created on: 04 Sep 2018
+ *      Author: i.delpino
+ */
 
 #ifndef _reactive_hokuyo_alg_h_
 #define _reactive_hokuyo_alg_h_
@@ -144,16 +150,47 @@ public:
    */
   ~ReactiveHokuyoAlgorithm(void);
 
+  /**
+   * \brief incorporate sensor pose information.
+   *
+   * @param input_laser_scan
+   * @param sensor_height
+   * @param sensor_pitch_deg_angle
+   * @param steering_deg_angle
+   * @param output_3D_pointcloud2
+   */
   void incorporateSensorPoseInformation(sensor_msgs::LaserScan& input_laser_scan, float sensor_height,
                                         float sensor_pitch_deg_angle, float steering_deg_angle,
                                         sensor_msgs::PointCloud2& output_3D_pointcloud2);
 
+  /**
+   * \brief eliminate small clusters.
+   *
+   * @param input_pointcloud2
+   * @param euclidean_association_threshold
+   * @param min_obstacle_radius
+   * @param output_pointcloud2
+   */
   void eliminateSmallClusters(sensor_msgs::PointCloud2& input_pointcloud2, float euclidean_association_threshold,
                               float min_obstacle_radius, sensor_msgs::PointCloud2& output_pointcloud2);
 
+  /**
+   * \brief filter non obstacle points.
+   *
+   * @param input_pointcloud2
+   * @param z_threshold
+   * @param vehicle_width
+   * @param output_poincloud2
+   */
   void filterNonObstaclePoints(sensor_msgs::PointCloud2& input_pointcloud2, float z_threshold, float vehicle_width,
                                sensor_msgs::PointCloud2& output_poincloud2);
 
+  /**
+   * \brief find closest distance.
+   *
+   * @param input_pointcloud2
+   * @param closest_distance
+   */
   void findClosestDistance(sensor_msgs::PointCloud2& input_pointcloud2, float& closest_distance);
 };
 

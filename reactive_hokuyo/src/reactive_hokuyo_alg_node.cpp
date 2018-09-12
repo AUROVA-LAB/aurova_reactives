@@ -34,11 +34,11 @@ ReactiveHokuyoAlgNode::ReactiveHokuyoAlgNode(void) :
   this->pointcloud_publisher_ = this->public_node_handle_.advertise < sensor_msgs::PointCloud2 > ("pointcloud", 1);
 
   // [init subscribers]
-  this->hokuyo_subscriber_ = this->public_node_handle_.subscribe("/scan", 1, &ReactiveHokuyoAlgNode::hokuyo_callback,
+  this->hokuyo_subscriber_ = this->public_node_handle_.subscribe("/scan", 1, &ReactiveHokuyoAlgNode::cb_hokuyoMsg,
                                                                  this);
 
   this->ackermann_subscriber_ = this->public_node_handle_.subscribe("/estimated_ackermann_state", 1,
-                                                                    &ReactiveHokuyoAlgNode::estimatedAckermannStateCB,
+                                                                    &ReactiveHokuyoAlgNode::cb_estimatedAckermannState,
                                                                     this);
 
   pthread_mutex_init(&this->hokuyo_mutex_, NULL);
@@ -94,7 +94,7 @@ void ReactiveHokuyoAlgNode::mainNodeThread(void)
 
 /*  [subscriber callbacks] */
 
-void ReactiveHokuyoAlgNode::hokuyo_callback(const sensor_msgs::LaserScan::ConstPtr& msg)
+void ReactiveHokuyoAlgNode::cb_hokuyoMsg(const sensor_msgs::LaserScan::ConstPtr& msg)
 {
   this->hokuyo_mutex_enter();
 
@@ -114,7 +114,7 @@ void ReactiveHokuyoAlgNode::hokuyo_callback(const sensor_msgs::LaserScan::ConstP
   this->hokuyo_mutex_exit();
 }
 
-void ReactiveHokuyoAlgNode::estimatedAckermannStateCB(
+void ReactiveHokuyoAlgNode::cb_estimatedAckermannState(
     const ackermann_msgs::AckermannDriveStamped& estimated_ackermann_state_msg)
 {
   this->hokuyo_mutex_enter();

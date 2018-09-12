@@ -1,0 +1,5 @@
+#gitignore
+/reactive_hokuyo/documentation/html
+/reactive_hokuyo/documentation/latex
+/velocity_recommender/documentation/html
+/velocity_recommender/documentation/latex

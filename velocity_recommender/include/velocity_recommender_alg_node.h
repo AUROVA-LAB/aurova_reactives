@@ -21,6 +21,12 @@
 // of the scripts. ROS topics can be easly add by using those scripts. Please
 // refer to the IRI wiki page for more information:
 // http://wikiri.upc.es/index.php/Robotics_Lab
+/**
+ * \file velocity_recommender_alg_node.h
+ *
+ *  Created on: 04 Sep 2018
+ *      Author: i.delpino
+ */
 
 #ifndef _velocity_recommender_alg_node_h_
 #define _velocity_recommender_alg_node_h_
@@ -72,6 +78,10 @@ private:
 
   // [subscriber attributes]
   ros::Subscriber reactive_hokuyo_subscriber_;
+
+  /**
+   * \brief Callback for read hokuyo laser sensor.
+   */
   void reactive_hokuyo_callback(const std_msgs::Float32::ConstPtr& msg);
 
   // [service attributes]
