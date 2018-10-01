@@ -146,6 +146,9 @@ public:
   void filterPointsByTurningRadius(sensor_msgs::PointCloud2& input, float steering_angle, float wheelbase,
                                    float vehicle_width, float x_axis_distance_from_base_link_to_velodyne,
                                    sensor_msgs::PointCloud2& output);
+
+  void findClosestDistance(sensor_msgs::PointCloud2& input_pointcloud2, float& closest_front_distance,
+                           float& closest_back_distance);
 };
 
 #endif

@@ -100,7 +100,7 @@ void ReactiveVelodyneAlgorithm::filterPointsByTurningRadius(sensor_msgs::PointCl
 
   turn_center_y_coordinate = wheelbase / tan(steering_angle_radians);
 
-  std::cout<<"turning radius = " << turn_center_y_coordinate << std::endl;
+  std::cout << "turning radius = " << turn_center_y_coordinate << std::endl;
 
   float x = 0.0;
   float y = 0.0;
@@ -111,9 +111,11 @@ void ReactiveVelodyneAlgorithm::filterPointsByTurningRadius(sensor_msgs::PointCl
     x = input_cloud_pcl->points[i].x;
     y = input_cloud_pcl->points[i].y;
 
-    distance = sqrt( (x-turn_center_x_coordinate) * (x-turn_center_x_coordinate)
-                     + (y-turn_center_y_coordinate) * (y-turn_center_y_coordinate) );
-    if (distance < fabs(turn_center_y_coordinate) + vehicle_width/2.0 && distance > fabs(turn_center_y_coordinate) - vehicle_width/2.0)
+    distance = sqrt(
+        (x - turn_center_x_coordinate) * (x - turn_center_x_coordinate)
+            + (y - turn_center_y_coordinate) * (y - turn_center_y_coordinate));
+    if (distance < fabs(turn_center_y_coordinate) + vehicle_width / 2.0
+        && distance > fabs(turn_center_y_coordinate) - vehicle_width / 2.0)
     {
       pcl::PointXYZI point;
       point.x = x;
@@ -125,4 +127,41 @@ void ReactiveVelodyneAlgorithm::filterPointsByTurningRadius(sensor_msgs::PointCl
   pcl::PCLPointCloud2 aux_output;
   toPCLPointCloud2(*output_cloud_pcl, aux_output);
   pcl_conversions::fromPCL(aux_output, output);
+}
+
+void ReactiveVelodyneAlgorithm::findClosestDistance(sensor_msgs::PointCloud2& input_pointcloud2,
+                                                    float& closest_front_distance, float& closest_back_distance)
+{
+  //std::cout << "findClosestDistance" << std::endl;
+  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PCLPointCloud2 cloudPCL;
+  pcl_conversions::toPCL(input_pointcloud2, cloudPCL);
+  pcl::fromPCLPointCloud2(cloudPCL, *input_cloud);
+
+  static const float OUT_OF_RANGE = 100.0;
+
+  float x = 0.0;
+  float y = 0.0;
+  float distance;
+  float min_front_distance = OUT_OF_RANGE;
+  float min_back_distance = OUT_OF_RANGE;
+
+  for (size_t i = 0; i < input_cloud->points.size(); ++i)
+  {
+    x = input_cloud->points[i].x;
+    y = input_cloud->points[i].y;
+
+    distance = sqrt(x * x + y * y);
+    if (x < 0.0 && distance < min_back_distance)
+    {
+      min_back_distance = distance;
+    }
+    if (x > 0.0 && distance < min_front_distance)
+    {
+      min_front_distance = distance;
+    }
+  }
+
+  closest_front_distance = min_front_distance;
+  closest_back_distance = min_back_distance;
 }
