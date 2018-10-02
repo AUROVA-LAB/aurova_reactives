@@ -12,9 +12,15 @@ VelocityRecommenderAlgNode::VelocityRecommenderAlgNode(void) :
 
   forward_velocity_recommendation_ = MAX_VELOCITY;
 
+<<<<<<< HEAD
   velodyne_back_obstacle_distance_ = OUT_OF_RANGE_;
   local_map_back_obstacle_distance_ = OUT_OF_RANGE_;
   min_back_obstacle_distance_ = OUT_OF_RANGE_;
+=======
+  velodyne_back_obstacle_distance_ = -1 * OUT_OF_RANGE_;
+  local_map_back_obstacle_distance_ = -1 * OUT_OF_RANGE_;
+  min_back_obstacle_distance_ = -1 * OUT_OF_RANGE_;
+>>>>>>> 61456aec3d422fad8121300803ccb5734b93682f
 
   backward_velocity_recommendation_ = MAX_VELOCITY;
 
@@ -169,6 +175,30 @@ void VelocityRecommenderAlgNode::cb_back_reactive_velodyne(const std_msgs::Float
   velodyne_back_obstacle_distance_ = msg->data;
   flag_new_data_ = true;
   std::cout << "Back reactive velodyne received!" << std::endl;
+
+  this->velocity_recommender_mutex_exit();
+
+}
+
+void VelocityRecommenderAlgNode::cb_front_reactive_velodyne(const std_msgs::Float32::ConstPtr& msg)
+{
+  this->velocity_recommender_mutex_enter();
+
+  velodyne_front_obstacle_distance_ = msg->data;
+  flag_new_data_ = true;
+  //std::cout << "Front reactive velodyne received!" << std::endl;
+
+  this->velocity_recommender_mutex_exit();
+
+}
+
+void VelocityRecommenderAlgNode::cb_back_reactive_velodyne(const std_msgs::Float32::ConstPtr& msg)
+{
+  this->velocity_recommender_mutex_enter();
+
+  velodyne_back_obstacle_distance_ = msg->data;
+  flag_new_data_ = true;
+  //std::cout << "Back reactive velodyne received!" << std::endl;
 
   this->velocity_recommender_mutex_exit();
 

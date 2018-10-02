@@ -31,7 +31,11 @@ ReactiveHokuyoAlgNode::ReactiveHokuyoAlgNode(void) :
   this->front_obstacle_distance_publisher_ = this->public_node_handle_.advertise < std_msgs::Float32
       > ("/hokuyo_front_closest_obstacle_distance", 1);
 
+<<<<<<< HEAD
   this->pointcloud_publisher_ = this->public_node_handle_.advertise < sensor_msgs::PointCloud2 > ("/reactive_hokuyo_pointcloud", 1);
+=======
+  this->pointcloud_publisher_ = this->public_node_handle_.advertise < sensor_msgs::PointCloud2 > ("/hokuyo_obstacle_points", 1);
+>>>>>>> 61456aec3d422fad8121300803ccb5734b93682f
 
   // [init subscribers]
   this->hokuyo_subscriber_ = this->public_node_handle_.subscribe("/scan", 1, &ReactiveHokuyoAlgNode::cb_hokuyoMsg,

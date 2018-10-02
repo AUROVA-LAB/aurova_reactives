@@ -30,7 +30,11 @@
 #include <sensor_msgs/PointCloud2.h>
 #include "std_msgs/Float32.h"
 #include "ackermann_msgs/AckermannDriveStamped.h"
+<<<<<<< HEAD
 //#include "iridrivers/exceptions.h"
+=======
+#include "iridrivers/exceptions.h"
+>>>>>>> 61456aec3d422fad8121300803ccb5734b93682f
 
 // [publisher subscriber headers]
 
