@@ -30,6 +30,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include "std_msgs/Float32.h"
 #include "ackermann_msgs/AckermannDriveStamped.h"
+//#include "iridrivers/exceptions.h"
 
 // [publisher subscriber headers]
 
@@ -45,19 +46,19 @@ class ReactiveVelodyneAlgNode : public algorithm_base::IriBaseAlgorithm<Reactive
 {
 private:
   // Constants
-  const float OUT_OF_RANGE_ = 100.0;
-  const float STOP_VEHICLE_ = 0.0;
+  static const float OUT_OF_RANGE_ = 100.0;
+  static const float STOP_VEHICLE_ = 0.0;
 
   // Constant robot hardware constraints
-  const float WHEELBASE_METERS_ = 1.05;
-  const float DISTANCE_FROM_SENSOR_TO_FRONT_ = 0.750;
-  const float DISTANCE_FROM_SENSOR_TO_BACK_ = 0.800;
-  const float X_DISTANCE_FROM_BASE_LINK_TO_SENSOR_ = 0.550;
-  const float SENSOR_HEIGHT_ = 1.100;
+  static const float WHEELBASE_METERS_ = 1.05;
+  static const float DISTANCE_FROM_SENSOR_TO_FRONT_ = 0.750;
+  static const float DISTANCE_FROM_SENSOR_TO_BACK_ = 0.800;
+  static const float X_DISTANCE_FROM_BASE_LINK_TO_SENSOR_ = 0.550;
+  static const float SENSOR_HEIGHT_ = 1.100;
 
-  const float VEHICLE_WIDTH_ = 0.800;
-  const float ABS_MAX_STEERING_DEG_ANGLE = 30.000;
-  const float MIN_OBSTACLE_HEIGHT_ = 0.300;
+  static const float VEHICLE_WIDTH_ = 0.800;
+  static const float ABS_MAX_STEERING_DEG_ANGLE = 30.000;
+  static const float MIN_OBSTACLE_HEIGHT_ = 0.300;
 
   // Input
   bool flag_new_velodyne_data_;
@@ -91,10 +92,10 @@ private:
 
   // [subscriber attributes]
   ros::Subscriber velodyne_subscriber_;
-  void velodyneCB(const sensor_msgs::PointCloud2::ConstPtr& msg);
+  void cb_velodyne(const sensor_msgs::PointCloud2::ConstPtr& msg);
 
   ros::Subscriber ackermann_subscriber_;
-  void estimatedAckermannStateCB(const ackermann_msgs::AckermannDriveStamped& estimated_ackermann_state_msg);
+  void cb_estimatedAckermannState(const ackermann_msgs::AckermannDriveStamped& estimated_ackermann_state_msg);
 
   pthread_mutex_t velodyne_mutex_;
   void velodyne_mutex_enter(void);

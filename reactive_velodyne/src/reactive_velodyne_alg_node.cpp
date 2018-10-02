@@ -24,19 +24,19 @@ ReactiveVelodyneAlgNode::ReactiveVelodyneAlgNode(void) :
 
   // [init publishers]
   this->front_obstacle_distance_publisher_ = this->public_node_handle_.advertise < std_msgs::Float32
-      > ("front_obstacle_distance", 1);
+      > ("/velodyne_front_closest_obstacle_distance", 1);
 
   this->back_obstacle_distance_publisher_ = this->public_node_handle_.advertise < std_msgs::Float32
-      > ("back_obstacle_distance", 1);
+      > ("/velodyne_back_closest_obstacle_distance", 1);
 
-  this->pointcloud_publisher_ = this->public_node_handle_.advertise < sensor_msgs::PointCloud2 > ("pointcloud", 1);
+  this->pointcloud_publisher_ = this->public_node_handle_.advertise < sensor_msgs::PointCloud2 > ("/velodyne_obstacle_points", 1);
 
   // [init subscribers]
   this->velodyne_subscriber_ = this->public_node_handle_.subscribe("/velodyne_points", 1,
-                                                                   &ReactiveVelodyneAlgNode::velodyneCB, this);
+                                                                   &ReactiveVelodyneAlgNode::cb_velodyne, this);
 
   this->ackermann_subscriber_ = this->public_node_handle_.subscribe("/estimated_ackermann_state", 1,
-                                                                    &ReactiveVelodyneAlgNode::estimatedAckermannStateCB,
+                                                                    &ReactiveVelodyneAlgNode::cb_estimatedAckermannState,
                                                                     this);
 
   pthread_mutex_init(&this->velodyne_mutex_, NULL);
@@ -67,7 +67,7 @@ void ReactiveVelodyneAlgNode::mainNodeThread(void)
 
     this->alg_.filterPointsOutsideWorkArea(local_copy_of_input_cloud_, 1.3, 2.0, obstacle_points_);
 
-    if (fabs(steering_angle_) < 1.0) // if the steering is clos to zero, the center is at infinity, so we assume straight line
+    if (fabs(steering_angle_) < 1.0) // if the steering is close to zero, the center is at infinity, so we assume straight line
     {
       this->alg_.filterPointsStraightLine(obstacle_points_, safety_width_, obstacle_points_);
     }
@@ -77,12 +77,15 @@ void ReactiveVelodyneAlgNode::mainNodeThread(void)
                                              X_DISTANCE_FROM_BASE_LINK_TO_SENSOR_, obstacle_points_);
     }
 
-    // [publish messages]
-    //front_obstacle_distance_msg_.data = closest_front_obstacle_point_ - DISTANCE_FROM_SENSOR_TO_FRONT_;
-    //this->front_obstacle_distance_publisher_.publish(this->front_obstacle_distance_msg_);
+    this->alg_.findClosestDistance(obstacle_points_, closest_front_obstacle_point_, closest_back_obstacle_point_);
 
-    //back_obstacle_distance_msg_.data = closest_back_obstacle_point_ - DISTANCE_FROM_SENSOR_TO_BACK_;
-    //this->back_obstacle_distance_publisher_.publish(this->back_obstacle_distance_msg_);
+
+    // [publish messages]
+    front_obstacle_distance_msg_.data = closest_front_obstacle_point_ - DISTANCE_FROM_SENSOR_TO_FRONT_;
+    this->front_obstacle_distance_publisher_.publish(this->front_obstacle_distance_msg_);
+
+    back_obstacle_distance_msg_.data = closest_back_obstacle_point_ - DISTANCE_FROM_SENSOR_TO_BACK_;
+    this->back_obstacle_distance_publisher_.publish(this->back_obstacle_distance_msg_);
 
     obstacle_points_.header.frame_id = local_copy_of_input_cloud_.header.frame_id;
     obstacle_points_.header.stamp = local_copy_of_input_cloud_.header.stamp;
@@ -96,14 +99,14 @@ void ReactiveVelodyneAlgNode::mainNodeThread(void)
   }
 }
 
-void ReactiveVelodyneAlgNode::velodyneCB(const sensor_msgs::PointCloud2::ConstPtr& msg)
+void ReactiveVelodyneAlgNode::cb_velodyne(const sensor_msgs::PointCloud2::ConstPtr& msg)
 {
   this->velodyne_mutex_enter();
 
   input_cloud_ = *msg;
 
   //DEBUG!!
-  //std::cout << "Velodyne scan received!" << std::endl;
+  std::cout << "Velodyne scan received!" << std::endl;
   if (msg == NULL)
     std::cout << std::endl << "Null pointer!!! in function velodyneCB!";
 
@@ -112,13 +115,13 @@ void ReactiveVelodyneAlgNode::velodyneCB(const sensor_msgs::PointCloud2::ConstPt
   this->velodyne_mutex_exit();
 }
 
-void ReactiveVelodyneAlgNode::estimatedAckermannStateCB(
+void ReactiveVelodyneAlgNode::cb_estimatedAckermannState(
     const ackermann_msgs::AckermannDriveStamped& estimated_ackermann_state_msg)
 {
   this->velodyne_mutex_enter();
 
   //DEBUG!!
-  //std::cout << "Ackermann state received!" << std::endl;
+  std::cout << "Ackermann state received!" << std::endl;
 
   steering_angle_ = estimated_ackermann_state_msg.drive.steering_angle;
 

@@ -48,8 +48,8 @@
 class VelocityRecommenderAlgNode : public algorithm_base::IriBaseAlgorithm<VelocityRecommenderAlgorithm>
 {
 private:
-  const float OUT_OF_RANGE = 100.0;
-  const float MAX_VELOCITY = 2.0;
+  static const float OUT_OF_RANGE_ = 100.0;
+  static const float MAX_VELOCITY = 2.0;
 
   float time_to_reach_min_allowed_distance_;
   float safety_distance_to_stop_vehicle_;
@@ -77,12 +77,18 @@ private:
   std_msgs::Float32 backward_recommended_velocity_msg_;
 
   // [subscriber attributes]
-  ros::Subscriber reactive_hokuyo_subscriber_;
+  ros::Subscriber front_reactive_hokuyo_subscriber_;
+  ros::Subscriber front_reactive_velodyne_subscriber_;
+  ros::Subscriber back_reactive_velodyne_subscriber_;
 
   /**
    * \brief Callback for read hokuyo laser sensor.
    */
-  void reactive_hokuyo_callback(const std_msgs::Float32::ConstPtr& msg);
+  void cb_front_reactive_hokuyo(const std_msgs::Float32::ConstPtr& msg);
+
+  void cb_front_reactive_velodyne(const std_msgs::Float32::ConstPtr& msg);
+
+  void cb_back_reactive_velodyne(const std_msgs::Float32::ConstPtr& msg);
 
   // [service attributes]
 
