@@ -55,6 +55,10 @@ private:
   static const float DISTANCE_FROM_SENSOR_TO_BACK_ = 0.800;
   static const float X_DISTANCE_FROM_BASE_LINK_TO_SENSOR_ = 0.550;
   static const float SENSOR_HEIGHT_ = 1.100;
+  static const float SAFETY_MARGIN_ABOVE_SENSOR_ = 0.5;
+
+  static const float MAX_VEL_ = 1.3;
+  static const float TIME_TO_REACH_OBSTACLE_ = 2.0;
 
   static const float VEHICLE_WIDTH_ = 0.800;
   static const float ABS_MAX_STEERING_DEG_ANGLE = 30.000;

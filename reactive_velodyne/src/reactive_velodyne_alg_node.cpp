@@ -8,7 +8,7 @@ ReactiveVelodyneAlgNode::ReactiveVelodyneAlgNode(void) :
 
   z_threshold_ = MIN_OBSTACLE_HEIGHT_;
 
-  abs_lateral_safety_margin_ = 0.1;
+  abs_lateral_safety_margin_ = 0.15;
 
   safety_width_ = VEHICLE_WIDTH_ + (2.0 * abs_lateral_safety_margin_);
 
@@ -65,7 +65,11 @@ void ReactiveVelodyneAlgNode::mainNodeThread(void)
     local_copy_of_input_cloud_ = input_cloud_;
     this->velodyne_mutex_exit();
 
-    this->alg_.filterPointsOutsideWorkArea(local_copy_of_input_cloud_, 1.3, 2.0, obstacle_points_);
+    this->alg_.filterPointsOutsideWorkArea(local_copy_of_input_cloud_,
+                                           MAX_VEL_, TIME_TO_REACH_OBSTACLE_,
+                                           SENSOR_HEIGHT_, MIN_OBSTACLE_HEIGHT_,
+                                           SAFETY_MARGIN_ABOVE_SENSOR_,
+                                           obstacle_points_);
 
     if (fabs(steering_angle_) < 1.0) // if the steering is close to zero, the center is at infinity, so we assume straight line
     {
@@ -81,10 +85,22 @@ void ReactiveVelodyneAlgNode::mainNodeThread(void)
 
 
     // [publish messages]
-    front_obstacle_distance_msg_.data = closest_front_obstacle_point_ - DISTANCE_FROM_SENSOR_TO_FRONT_;
+    float front_distance_saturated = closest_front_obstacle_point_ - DISTANCE_FROM_SENSOR_TO_FRONT_;
+    if(front_distance_saturated < 0.0)
+    {
+      front_distance_saturated = 0.0;
+    }
+    front_obstacle_distance_msg_.data = front_distance_saturated;
     this->front_obstacle_distance_publisher_.publish(this->front_obstacle_distance_msg_);
 
-    back_obstacle_distance_msg_.data = closest_back_obstacle_point_ - DISTANCE_FROM_SENSOR_TO_BACK_;
+
+    float back_distance_saturated = closest_back_obstacle_point_ - DISTANCE_FROM_SENSOR_TO_BACK_;
+    if(back_distance_saturated < 0.0)
+    {
+      back_distance_saturated = 0.0;
+    }
+
+    back_obstacle_distance_msg_.data = back_distance_saturated;
     this->back_obstacle_distance_publisher_.publish(this->back_obstacle_distance_msg_);
 
     obstacle_points_.header.frame_id = local_copy_of_input_cloud_.header.frame_id;

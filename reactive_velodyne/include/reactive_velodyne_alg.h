@@ -139,6 +139,7 @@ public:
   ~ReactiveVelodyneAlgorithm(void);
 
   void filterPointsOutsideWorkArea(sensor_msgs::PointCloud2& input, float max_vel, float time_to_reach_obstacle,
+                                   float sensor_height, float min_obstacle_height, float safety_margin_above_sensor,
                                    sensor_msgs::PointCloud2& output);
 
   void filterPointsStraightLine(sensor_msgs::PointCloud2& input, float vehicle_width, sensor_msgs::PointCloud2& output);

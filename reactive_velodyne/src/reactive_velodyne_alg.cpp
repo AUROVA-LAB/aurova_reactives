@@ -25,7 +25,8 @@ void ReactiveVelodyneAlgorithm::config_update(Config& config, uint32_t level)
 
 // ReactiveVelodyneAlgorithm Public API
 void ReactiveVelodyneAlgorithm::filterPointsOutsideWorkArea(sensor_msgs::PointCloud2& input, float max_vel,
-                                                            float time_to_reach_obstacle,
+                                                            float time_to_reach_obstacle, float sensor_height, float min_obstacle_height,
+                                                            float safety_margin_above_sensor,
                                                             sensor_msgs::PointCloud2& output)
 {
   //Debug!
@@ -51,6 +52,14 @@ void ReactiveVelodyneAlgorithm::filterPointsOutsideWorkArea(sensor_msgs::PointCl
   pass.setInputCloud(cloud_filtered);
   pass.setFilterFieldName("y");
   pass.setFilterLimits(-1 * abs_max_coordinate, abs_max_coordinate);
+  pass.filter(*cloud_filtered);
+
+  float min_z_coordinate_for_an_obstacle = -1.0*sensor_height + min_obstacle_height;
+  float max_z_coordinate_for_an_obstacle = safety_margin_above_sensor;
+
+  pass.setInputCloud(cloud_filtered);
+  pass.setFilterFieldName("z");
+  pass.setFilterLimits(min_z_coordinate_for_an_obstacle, max_z_coordinate_for_an_obstacle);
   pass.filter(*cloud_filtered);
 
   pcl::PCLPointCloud2 aux_output;
