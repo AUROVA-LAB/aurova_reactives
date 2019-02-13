@@ -1,12 +1,12 @@
 <launch>
 
+  <!--
   <node pkg="reactive_hokuyo" type="reactive_hokuyo" name="reactive_hokuyo" >
     <remap from="scan" to="hokuyo" />
   </node>
-
-  <!--
-  <node pkg="reactive_velodyne" type="reactive_velodyne" name="reactive_velodyne" />
   -->
+
+  <node pkg="reactive_velodyne" type="reactive_velodyne" name="reactive_velodyne" />
 
   <node pkg="velocity_recommender" type="velocity_recommender" name="velocity_recommender" />
 
