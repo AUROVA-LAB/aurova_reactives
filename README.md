@@ -3,6 +3,10 @@ This is a metapackage that contains different packages that perform safety-orien
 
 **reactive_hokuyo**
 This package contains a node that, as input, reads the topics /estimated_ackermann_state of type ackermann_msgs::AckermannDriveStamped, and /scan of type sensor_msgs::LaserScan. This node detects obstacles within the range of the laser, and returns the distance to it. The node output is published in the topics /front_obstacle_distance of type std_msgs::Float32, and /pointcloud of type sensor_msgs::PointCloud2.
+* ~lateral_safety_margin (default: 0.10): The effective width of the vehicle will be W + 2*margin.
+* ~min_obstacle_height (default: 0.30): To filter small obstacles.
+* ~euclidean_association_threshold (default: 0.10): To do the clustering.
+* ~min_obstacle_radius (default: 0.03): To discard outliers.
 
 **reactive_velodyne**
 This package contains a node that, as input, reads the topics /estimated_ackermann_state of type ackermann_msgs::AckermannDriveStamped, and /velodyne_points of type sensor_msgs::PointCloud2. This node detects obstacles within the range of the laser, and returns the distance to it. The node output is published in the topics /front_obstacle_distance of type std_msgs::Float32, and /pointcloud of type sensor_msgs::PointCloud2.
